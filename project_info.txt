@@ -1,0 +1,68 @@
+I have a bunch of images in form of jpg and png in a directory. These images are photos taken by a phone camera,
+as such a lot of these photos display the date of the time they were taken and it looks something like the following example 02/05/2023.
+Each one represents a photo of an etiquette or a label that sometimes has a QR code and a bunch of information about a product.
+These stickers contain specific information about different products. Please note that the language used on these etiquettes or 
+labels is mostly German and sometimes English. I will give you some examples about the kind of information these images have;
+
+Please note that the following text is written in German and the English translation in shown right under it.
+
+In German:
+
+Artikelname
+Artikelnummer
+MHD (Mindesthaltbarkeitsdatum)
+Einfrierdatum
+Erntejahr
+LAX
+Produktionscode 
+Batch
+Lot
+
+In English:
+
+Item name
+Item number
+Best before date (MHD)
+Freezing date
+Harvest year
+LAX
+Production code 
+Batch
+Lot
+
+The goal is to programmatically retrieve all the information that are on the label.
+To tackle this problem we will be using platform openapi, Google Vision and python.
+
+In this case, the OpenAI API is used to interact with the GPT-3 language model, we will be using the following model:
+model: text-davinci-003
+
+The API allows the code to send a prompt (text input) to the GPT-3 model and receive generated text as a response.
+
+To summarize, the extraction of text from images is done using Tesseract OCR, while the generation of formatted information based on the extracted text is performed by GPT-3.
+
+
+Please note that the displayed date of the time the photos were taken (mostly visible/shown in the bottom right corner of the image)
+is not of any importance, which means that it should be ignored and not extracted along with the other data.
+
+Please also note that the "images" directory has two subdirectories, one for the ".jpg" images and the other for ".png".
+ 
+Make the code in such a way that a pdf file will be generated that contains all the extracted text from each image in a user-friendly manner,
+preferably in a bullet point format along with displaying each image next to the corresponding text.
+
+Since each image is unique, our code has to be flexible and smart when dealing with the images.
+Which means that if a "Lot" or a "production date" is not present or missing on the etiquette,
+the code has to inform me as such. For example the code can return a message saying "Information not available".
+
+The messages should be displayed in two different sections. The first section should be on the left side of the document
+and written in German. The second section should be on the right side of the document and written in English.
+I'm specifically talking about the following data that should be extracted and displayed in the above mentioned message:
+
+Artikelname
+Artikelnummer
+MHD (Mindesthaltbarkeitsdatum)
+Einfrierdatum
+Erntejahr
+LAX
+Produktionscode 
+Batch
+Lot
