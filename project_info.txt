@@ -1,4 +1,4 @@
-I have a bunch of images in form of jpg and png in a directory. These images are photos taken by a phone camera,
+I have a bunch of images in form of jpg and png in the "img1" directory. These images are photos taken by a phone camera,
 as such a lot of these photos display the date of the time they were taken and it looks something like the following example 02/05/2023.
 Each one represents a photo of an etiquette or a label that sometimes has a QR code and a bunch of information about a product.
 These stickers contain specific information about different products. Please note that the language used on these etiquettes or 
