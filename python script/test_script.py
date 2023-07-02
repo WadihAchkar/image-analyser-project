@@ -6,8 +6,8 @@ from fpdf import FPDF
 import openai
 
 # Set up API key
-openai.organization = "org-udXIP3LL8x0YUl1cNkdLubBg"
-openai.api_key = "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" # API key has been disabled as it should not be public. A new API key has to be created on https://platform.openai.com/account/api-keys
+openai.organization = "org-udXIP3LL8x0YUl1cNkdLubBg" # Not sure if this if essential for the code functionality.
+openai.api_key = "A new one has to be generated" # API key has been disabled as it should not be public. A new API key has to be created on https://platform.openai.com/account/api-keys
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Function to extract text from an image
