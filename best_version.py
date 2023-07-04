@@ -1,0 +1,123 @@
+import streamlit as st
+from PIL import Image
+import cv2
+import pytesseract
+import openai
+import os
+import requests
+
+api_key = "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"
+openai.api_key = api_key
+
+folder = r"C:\Training\image analyser project\img"
+
+# OCR API-Endpunkt-URL
+url = 'https://api.ocr.space/parse/image' ## not essential to code functionality
+
+# API-Schlüssel
+api_key_img = 'K88208356288957'
+
+# jpg_folder = r"C:\Training\image analyser project\img\jpg"
+# png_folder = r"C:\Training\image analyser project\img\png"
+
+# for jpg_file in os.listdir(jpg_folder):
+#     # Open the JPG file
+#     jpg_image = Image.open(jpg_folder + "\\" + jpg_file)
+
+#     # Convert the image to PNG format
+#     png_image = jpg_image.convert('RGB')
+
+#     # Save the PNG image
+#     png_image.save(png_folder + "\\" + jpg_file.replace(".JPG", ".png"))
+#     print(jpg_file + " -> " + jpg_file.replace(".JPG", ".png"))
+
+# # Set up the image to be processed
+# image_path = "IMG_0777"
+print("test")
+
+def ask_gpt(text):
+    response = openai.Completion.create(
+    model="text-davinci-003",
+    prompt="extrachiere Artikelname (ohne bofrost), Artikelnummer, MHD, (LAX or Produktionscode or Batch or LOT) von:\n" + text + "\n Nutze folgendes Format:\nArtikelname: <Artikelname>; Artikelnummer: <Artikelnummer>; MHD: <MDG>; usw...",
+    temperature=0.69,
+    max_tokens=416,
+    top_p=1,
+    frequency_penalty=0,
+    presence_penalty=0
+    )
+    
+    return response["choices"][0]["text"]
+
+def get_text_from_img(img):
+    # Laden des Bildes
+    img = cv2.imread(folder + f'{filename}')
+    
+    #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    gray = cv2.resize(img, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+    gray = cv2.medianBlur(gray, 3)
+
+    # Extrahieren des Textes aus dem Bild
+    text = pytesseract.image_to_string(img, lang='eng')
+    return text
+
+def img_resize():
+    img = cv2.imread(folder + f'{filename}')
+    
+    width = 1280
+    height = 720
+    dim = (width, height)
+
+    # Bild skalieren
+    img_resized = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+    cv2.imwrite(f'{folder}{filename}', img_resized)
+    return ocr_space_file()
+
+def ocr_space_file(overlay=False, language='eng'):
+    """ OCR.space API request with local file.
+        Python3.5 - not tested on 2.7
+    :param filename: Your file path & name.
+    :param overlay: Is OCR.space overlay required in your response.
+                    Defaults to False.
+    :param api_key: OCR.space API key.
+                    Defaults to 'helloworld'.
+    :param language: Language code to be used in OCR.
+                    List of available language codes can be found on https://ocr.space/OCRAPI
+                    Defaults to 'en'.
+    :return: Result in JSON format.
+    """
+    payload = {'isOverlayRequired': overlay,
+               'apikey': api_key_img,
+               'language': language,
+               }
+    with open(f'{folder}{filename}', 'rb') as f:
+        r = requests.post('https://api.ocr.space/parse/image',
+                          files={filename: f},
+                          data=payload,
+                          )
+    return r.content.decode()
+
+# print("test")
+file = st.file_uploader("Choose a file", accept_multiple_files = False, type = ['jpg'])
+if file is not None:
+    filename = file.name
+
+    # Save the file to a local directory
+    with open(f'{folder}{filename}', 'wb') as f:
+        f.write(file.getbuffer())
+    print("----------")
+    st.image(file)
+    print("test")
+    with st.spinner("Lade Textinformationen..."):
+        txt =img_resize()
+        print("txt: " + str(txt))
+    if txt is not None:
+        with st.spinner("Lade Kontext von Daten"):
+            result = ask_gpt(txt)
+            print("result: " + result)
+        info_array = result.split(";")
+        for i in range(4):
+            st.text(info_array[i])
+    else:
+        st.error("Bild auslesen nicht möglich")
+    os.remove(folder + f'{filename}')
